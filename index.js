@@ -10,6 +10,9 @@ function replaceText(word, replacement, text) {
   // Створення регулярного виразу для пошуку слова з флагом 'g' (глобальний пошук).
   // Використання методу `replace` регулярного виразу для заміни слова на фразу у тексті.
   // Повернення заміненого тексту.
+  const regex = new RegExp(word, "g");
+  const replacedText = text.replace(regex, replacement);
+  return replacedText;
 }
 
 // Перевірка
@@ -35,6 +38,9 @@ function checkWord(word, text) {
   // Створення регулярного виразу для пошуку слова з флагом 'i' (регістронезалежний пошук).
   // Використання методу `test` регулярного виразу для перевірки наявності слова у тексті.
   // Повернення результату перевірки.
+  const regex = new RegExp(word, "i");
+  const str = regex.test(text);
+  return str;
 }
 
 // Перевірка
@@ -54,6 +60,10 @@ function extractTextInParentheses(str) {
   // Використання методу `matchAll` для отримання всіх збігів регулярного виразу.
   // Створення масиву зі знайденими текстами.
   // Повернення масиву вилучених текстів.
+  const regex = /\((.*?)\)/g;
+  const matches = [...str.matchAll(regex)];
+  const extractedTexts = matches.map((match) => match[1]);
+  return extractedTexts;
 }
 
 // Перевірка
@@ -74,6 +84,10 @@ function countEmails(str) {
   // Використання методу `match` для отримання всіх збігів регулярного виразу.
   // Підрахунок кількості email-адрес.
   // Повернення кількості email-адрес.
+  const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
+  const matches = str.match(regex);
+  const count = matches ? matches.length : 0;
+  return count;
 }
 
 // Перевірка
@@ -87,20 +101,26 @@ console.log(
 // Завдання 5
 /**
  * Функція `findWordOccurrences` знаходить всі входження заданого слова у рядок з урахуванням ігнорування регістру.
- *
  *  str - Рядок, в якому потрібно знайти входження слова.
  *  word - Слово, входження якого потрібно знайти.
  *  Повертає масив з індексами всіх входжень слова у рядок.
  */
 function findWordOccurrences(str, word) {
   // Створення регулярного виразу для пошуку слова з флагами 'g та 'i',
+  const regex = new RegExp(word, "gi");
   // Створюємо пустий масив matches, та змінну match без значення
+  const matches = [];
+  let match;
   // За допомогою циклу whild створюємо ітерацію поки рядок містить збіги з регулярним виразом, та змінній match присвоюємо збіги
-  // Додавання індексу поточного входження слова у масив.
-  // Оновлення lastIndex,присвоєюмо йому значення  match.index + 1, щоб продовжити пошук з наступного символу
+  while ((match = regex.exec(str)) !== null) {
+    // Додавання індексу поточного входження слова у масив.
+    matches.push(match.index);
+    // Оновлення lastIndex,присвоєюмо йому значення  match.index + 1, щоб продовжити пошук з наступного символу
+    regex.lastIndex = match.index + 1;
+  }
   // Повертаємо масив
+  return matches;
 }
-
 // Перевірка
 
 console.log("Завдання 5 ==============================");
@@ -123,8 +143,12 @@ console.log(
  */
 function checkRegexFlags(regex) {
   // Отримуємо всі флаги регулярного виразу.
+  const flags = regex.flags;
   // Перевіряємо наявність флагів 'g' та 'm' за допомогою методу `includes`.
+  const hasGlobalFlag = flags.includes("g");
+  const hasMultilineFlag = flags.includes("m");
   // Повертаємо  - true, якщо флаги 'g' та 'm' присутні, інакше - false
+  return hasGlobalFlag && hasMultilineFlag;
 }
 
 // Перевірка
@@ -146,8 +170,13 @@ console.log(checkRegexFlags(/pattern/gm));
  */
 function replaceWordOccurrences(str, word, newWord) {
   // Створюємо регулярний вираз зі словом, використовуючи флаг 'g' для глобального пошуку всіх входжень.
-  // Заміняємо всі входження слова у рядку на нове слово.
-  // Повертаємо результат
+  const regex = new RegExp(word, "g");
+
+  // Заміняємо всі входження слова у рядку на нове слово за допомогою методу `replace`.
+  const replacedStr = str.replace(regex, newWord);
+
+  // Повертаємо результат заміни.
+  return replacedStr;
 }
 
 // Перевірка
@@ -172,11 +201,22 @@ console.log(
  */
 function checkFlags(regex) {
   // Створюємо масив для зберігання використаних флагів.
+  const flagsUsed = [];
+
   // Перевіряємо, чи використовується флаг 'i' (ignoreCase) у регулярному виразі.
-  // Додаємо флаг ignoreCase до масиву, якщо він використовується.
+  if (regex.ignoreCase) {
+    // Додаємо флаг ignoreCase до масиву, якщо він використовується.
+    flagsUsed.push("ignoreCase");
+  }
+
   // Отримуємо вихідний код регулярного виразу за допомогою властивості `source`.
-  // Додаємо вихідний код до масиву
+  const regexSource = regex.source;
+
+  // Додаємо вихідний код до масиву.
+  flagsUsed.push(regexSource);
+
   // Повертаємо масив використаних флагів.
+  return flagsUsed;
 }
 
 // Приклад використання:
@@ -189,21 +229,29 @@ console.log(checkFlags(/pattern/gimsy));
 
 /**
  * Функція `checkRegexMethods` перевіряє, які методи використовуються в заданому регулярному виразі.
- *
  *  regex - Регулярний вираз для перевірки.
  * Повертає  - Масив методів, які використовуються у регулярному виразі.
  */
 function checkRegexMethods(regex) {
   // Створюємо масив для зберігання використаних методів.
+  const methodsUsed = [];
   // Перевіряємо, чи використовується метод `dotAll`.
+  if (regex.dotAll) {
+    methodsUsed.push("dotAll");
+  }
   // Перевіряємо, чи використовується метод `multiline`.
+  if (regex.multiline) {
+    methodsUsed.push("multiline");
+  }
   // Перевіряємо, чи використовується метод `sticky`.
+  if (regex.sticky) {
+    methodsUsed.push("sticky");
+  }
   // Повертаємо масив використаних методів.
+  return methodsUsed;
 }
-
 // Приклад використання:
 console.log("Завдання 9 ==============================");
-
 console.log(checkRegexMethods(/test/msy));
 // Виведе [ 'dotAll', 'multiline', 'sticky' ]
 
@@ -211,14 +259,16 @@ console.log(checkRegexMethods(/test/msy));
 
 /**
  * Функція `findWord` знаходить перше входження заданого слова у рядок за допомогою методу `search`.
- *
  *  str - Рядок, в якому потрібно знайти входження слова.
  *  word - Слово, входження якого потрібно знайти.
  * Повертає  - Індекс першого входження слова у рядок або -1, якщо слово не знайдено.
  */
 function findWord(str, word) {
   // Створення регулярного виразу для пошуку слова.
+  const regex = new RegExp(word);
   // Використання методу `search` для пошуку першого входження слова.
+  const index = str.search(regex);
+  return index;
 }
 
 // Приклад використання:
